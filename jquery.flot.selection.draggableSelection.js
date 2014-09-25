@@ -147,7 +147,7 @@ Flot plugin for draggable and resizable selecting of regions.
             if (selection.resizingActive) {
 
                 var delta = {};
-                var selectionWidth = selection.second.x - selection.first.x;
+                
 
                 function calculateDelta(previousMousePosition) {
                     return previousMousePosition ?
@@ -159,12 +159,20 @@ Flot plugin for draggable and resizable selecting of regions.
                 // if right selector
                 if (selector) {
                     delta = calculateDelta(selection.mousePosRight);
+
+                    var testRight = selection.first.x + delta;
+                    var selectionWidth = selection.second.x - testRight;
+
                     if (selectionWidth >= minimumSelection || (selectionWidth <= minimumSelection && delta < 0)) {
                         offsetSelection(delta, selector);
                         selection.mousePosRight = pos;
                     }
                 } else {
                     delta = calculateDelta(selection.mousePosLeft);
+                    
+                    var testLeft = selection.second.x + delta;
+                    var selectionWidth = testLeft - selection.first.x;
+
                     if (selectionWidth >= minimumSelection || (selectionWidth <= minimumSelection && delta > 0)) {
                         offsetSelection(delta, selector);
                         selection.mousePosLeft = pos;
@@ -254,7 +262,7 @@ Flot plugin for draggable and resizable selecting of regions.
         }
 
         function selectionIsSane() {
-            var minSize = 5;
+            var minSize = o.draggableSelection.minimumSelection;
             return Math.abs(selection.second.x - selection.first.x) >= minSize &&
                 Math.abs(selection.second.y - selection.first.y) >= minSize;
         }
@@ -294,8 +302,6 @@ Flot plugin for draggable and resizable selecting of regions.
                 // If color is not defined for selector use default
                 selector.color ? null : selector.color = c.toString();
 
-
-
                 // Draw right selector
                 ctx.fillStyle = selector.color;
                 ctx.fillRect(x - selector.width, y, selector.width, h);
@@ -303,7 +309,6 @@ Flot plugin for draggable and resizable selecting of regions.
                 // Draw left selector
                 ctx.fillStyle = selector.color;
                 ctx.fillRect(x + selectionWidth, y, selector.width, h);
-
 
 
                 // Draw selection
