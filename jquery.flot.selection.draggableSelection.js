@@ -31,6 +31,14 @@ Flot plugin for draggable and resizable selecting of regions.
                 updateSelection(e);
                 plot.getPlaceholder().trigger("plotselecting", [ getSelection() ]);
             }
+
+            if (pointOnSelector(e, 'right') || pointOnSelector(e, 'left')) {
+                plot.getPlaceholder().css('cursor', 'ew-resize');
+            } else if (pointInSelection(e)) {
+                plot.getPlaceholder().css('cursor', 'move');
+            } else {
+                plot.getPlaceholder().css('cursor', 'default');
+            }
         }
         
         function onMouseDown(e) {
