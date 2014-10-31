@@ -1,8 +1,9 @@
-/*
-Flot plugin for draggable and resizable selecting of regions.
-
-
-*/
+/**
+ * Flot plugin for draggable and resizable selecting of regions.
+ * @version v0.0.2 - 2014-10-29
+ * @author Ivan Blazevic <iblazevi@gmail.com>
+ * @license MIT License, http://www.opensource.org/licenses/MIT
+ */
 
 (function ($) {
     function init(plot) {
@@ -25,6 +26,8 @@ Flot plugin for draggable and resizable selecting of regions.
         var offset = plot.getPlaceholder().offset();
         var plotOffset = plot.getPlotOffset();
 
+        var leftSelectionOffset;
+        var rightSelectionOffset;
 
         function onMouseMove(e) {
             if (selection.active) {
@@ -44,7 +47,12 @@ Flot plugin for draggable and resizable selecting of regions.
         function onMouseDown(e) {
             if (e.which != 1)  // only accept left-click
                 return;
-            
+
+            // offset
+            leftSelectionOffset = e.offsetX - selection.first.x;
+            rightSelectionOffset = selection.second.x + o.draggableSelection.selector.width - e.offsetX;
+
+
             // cancel out any text selections
             document.body.focus();
 
@@ -155,7 +163,6 @@ Flot plugin for draggable and resizable selecting of regions.
             if (selection.resizingActive) {
 
                 var delta = {};
-                
 
                 function calculateDelta(previousMousePosition) {
                     return previousMousePosition ?
@@ -190,6 +197,11 @@ Flot plugin for draggable and resizable selecting of regions.
             } else if (selection.panning) {
 
                 var delta = pos.pageX - selection.mousePos.pageX;
+
+                // prevent selection goes too much on left side
+                if (pos.offsetX - leftSelectionOffset <= 0) return;
+                // prevent selection goes too much on right side
+                if (pos.offsetX + rightSelectionOffset >= plot.width()) return;
 
                 // update last selector mouse selection
                 if (selection.mousePosRight && selection.mousePosRight.pageX) 
